@@ -1,23 +1,16 @@
 // Variables Globales
 var Display    =  document.getElementById("display"); // Variable del ElementoID Display
-var OperandoA; // Captura el primer valor en Display para al Operacion
-var OperandoB; //  captura el ultimo valor en Display para realizar la operacion
-var OperandoR; //  captura el Valor resultado al cambiarse de Operacion 
-var Operacion=""; // Captura el tipo de Operacion + - * /
-var AcumSum =0;  // Acumlador de operacion Suma
-var AcumRes =0; // Acumulador de Operacion Resta
-var AcumMul =1; // Acumulador de Operacion Multiplicar
-var AcumDiv = 1; //Acumulador de Operacion Division
-var Result = 0;  // Valor de Result de Operacion
-var cadena = ""; // captura cadena del Display
-var OperAnt =""; // Captura la Operacion Anterior 
+var cadena = ""; // Captura cadena del Display
 var cad ; // Captura Cadena Display
 var res;  // Calcula valor resultado
 var StrCad; // Valida Cadena Resultado
+var Operaciones = new Array();//Array de Operaciones 
+var Operandos = new Array();//Array de Operandos
+var cont = 0; // varibale contador
 
 // Funciones Globales
 
-// Funcion Valida Caracter punto
+// Funcion Valida Caracter Punto : Valida que si existe algun punto en la cadena no se ingrese nuevamente
 function validarPunto (cadena) 
 {	
   var val = false ;
@@ -36,7 +29,7 @@ function validarPunto (cadena)
    return cadena;
 }
 
-//Funcion Valida Tamaño en la Cadena display
+//Funcion Valida Tamaño en la Cadena display:  Verifica que el tamaño del Display no supere los 8 caracteres
 function ValidarTamañoCadena (cadena) 
 {
   var val = false;
@@ -50,7 +43,7 @@ function ValidarTamañoCadena (cadena)
   return val;
 }
 
-//Funcion Valida Cadena en Resultado
+//Funcion Valida Cadena en Resultado : Verifica que el tamaño del resultado no supere los 8 caracteres
 function ValidarTamañoRes (cadena) {
   var cad ;
   if (cadena.length > 8)
@@ -119,9 +112,11 @@ function MostrarDisplay (elemento)
 	     Display.innerHTML =  validarPunto(Display.innerHTML);   
 	     break;
     }
+
    }  
 }
 
+// funcion boton - o + :  verifica si ya existe en la cadena el signo -, si existe se agrega al principio sino se elimina. Verifica que no sea numero 0 el inicial
 function validarMenosMas(cadena) 
 {	
   var val = false ;
@@ -144,136 +139,87 @@ function validarMenosMas(cadena)
     asignar(cadena);
 }
 
-//  Funciones de las Operaciones Sumar, Restar, Multiplicar y Dividir
-function Sumar(){
-  OperandoA =  display.innerHTML ;
-  AcumSum = AcumSum + parseFloat(OperandoA); 
-  
-  if ((Operacion == "") || (Operacion== '+')){
-  limpiar();
-  }else {
-	  OperAnt = Operacion;
-  }
-  Operacion= "+"
-  
+//  Funciones Operacion : se agrega al array Operando los numero de la Operacion y al array Operaciones la operacion aritmetica 
+
+function AsginarOpe(Oper){
+   Operandos[cont] = display.innerHTML;
+   Operaciones[cont]= Oper
+   limpiar();
+   cont++;
 }
 
-function Restar(){
- OperandoA =  display.innerHTML ;
- AcumRes = parseFloat(OperandoA) - AcumRes;	
- 
-  if ((Operacion == "") || (Operacion== '-')){
-  limpiar();
-  }else {
-	  OperAnt = Operacion;
-  }
-  Operacion= "-";
-} 
 
-function Multiplicar(){
- OperandoA =  display.innerHTML ;
- AcumMul   = parseFloat(OperandoA) * AcumMul;	
- 
-  if ((Operacion == "") || (Operacion== '*')){
-  limpiar();
-  }else {
-	  OperAnt = Operacion;
-  }
-  Operacion= "*";
-} 
-
-function Division(){
- OperandoA =  display.innerHTML ;
- AcumDiv   = parseFloat(OperandoA) / AcumDiv;	
- 
-  if ((Operacion == "") || (Operacion== '/')){
-  limpiar();
-  }else {
-	  OperAnt = Operacion;
-  }
-  Operacion= "/";
-} 
-
-// Funcion de la Validacion Division entre Cero
-function ValidacionCero (numVal)
-{
-   if (numVal == 0) {
-    Display.innerHTML ="ERROR";
-  }
-}
-
-// funciones para Limpiar, Resetear los Valores de Display y de las Variables Globales
+// funciones para Limpiar, Resetear los Valores de Display  
 function limpiar(){
   Display.innerHTML =""; 	  
 }
 
+// funciones para resetear los Valores iniciales y variable globales
+
 function resetear (){
 	
 Display.innerHTML ="0";
-OperandoA = 0;
-OperandoB = 0;
-Operacion = "";
-AcumSum = 0;
-AcumRes = 0;
-AcumMul =1;
-AcumDiv = 1;
-OperAnt ="="; 
+Operandos= [];
+Operaciones = []
+cont = 0;
 }
 
 // Funcion para asignar los valores de Resultados en el Display
-function asignar (Res){
-	Display.innerHTML = Res;
+function asignar (Resul){
+	Display.innerHTML = Resul;
 }
 
-// funcion Resultado operacion Igual
+// Funcion Resolver:  Se encarga de recorrer los array de Operaciones y Operando para realizar las operaciones artimeticas deseadas
 function resolver(){
   res = 0;
   StrCad = '';
-   switch(Operacion) {
-	 case "+" :
-	  res =  AcumSum + parseFloat(OperandoB) ;
-	   break;
-	 case "-" :
-	  res = AcumRes  - parseFloat(OperandoB);
-	   break;
-	 case "*" :
-	   res = AcumMul * parseFloat(OperandoB);
-	   break;   
-     case "/" :
-	   res = AcumDiv / parseFloat(OperandoB);
-	   break;     	   
-  }
+  Operandos[cont] =   display.innerHTML; 
+  j = 2;
+  for (var i = 0; i <  Operaciones.length; i++) 
+  {
+       if ((i == 0 ) && (Operaciones[0] == "+" )){
+		   
+		   res =   parseFloat(Operandos[0]) +   parseFloat(Operandos[1]);
+	   }  
+	    if ((i == 0 )&& (Operaciones[0] == "-" )){
+		   
+		   res =  parseFloat(Operandos[0]) - parseFloat(Operandos[1]);
+		  
+	   }
+       if ((i == 0 )&& (Operaciones[0] == "*" )){
+		   
+		   res =  parseFloat(Operandos[0]) * parseFloat(Operandos[1]);
+	   } 	   
+	   if ((i == 0 )&& (Operaciones[0] == "/" )){
+		   
+		   res =  parseFloat(Operandos[0]) / parseFloat(Operandos[1]);
+	   } 	
+	   if (i>=1){
+		 
+         if (Operaciones[i] == "+" ){
+			 res = res  +  parseFloat(Operandos[j]) 
+			 j++;
+		 }		 
+		 if (Operaciones[i] == "-" ){
+			 res = res  -   parseFloat(Operandos[j]) ;
+			 j++;
+		 }	 
+		 if (Operaciones[i] == "*" ){
+			 res = res  *   parseFloat(Operandos[j]) ;
+			 j++;
+		 }
+		 if (Operaciones[i] == "/" ){
+			 res = res  /  parseFloat(Operandos[j]) ;
+			 j++;
+		 }
+		   
+	   }
+       
+	}
+
 	resetear();
 	StrCad = res.toString();
-    Display.innerHTML = ValidarTamañoRes(StrCad);
-}
-
-// Resultado de Operacion Previa
-function resolver2(){
-   OperandoR = display.innerHTML;
-   res = 0;
-   StrCad = '';
-   switch(Operacion) { 
-	 case "+" :
-	   res =  AcumSum + parseFloat(OperandoR) ;
-	   break;
-	 case "-" :
-	   res = AcumRes  - parseFloat(OperandoR);
-	  // res = AcumRes;
-	   break;
-	 case "*" :
-	   res = AcumMul * parseFloat(OperandoR);
-	   break;   
-     case "/" :
-	   ValidacionCero(parseFloat(OperandoR));
-	   res = AcumDiv / parseFloat(OperandoR);
-	   break;     	   
-  }
-      StrCad = res.toString();
-      cadena  = ValidarTamañoRes(StrCad);;
-       limpiar();
-	   OperandoR =0;
-	   asignar(cadena); 	  
+    Display.innerHTML =ValidarTamañoRes(StrCad);
 }
 
 // BEGIIIIIIN////
@@ -289,82 +235,31 @@ init: function (){
 
 // Eventos
 
-/*  Evento Mostrar Display : este evento evaluara primeramente si existe alguna Operacion Anterior de +  - * y limpia el display /
-     luego llama la funcion MostrarDisplay  enviando target del Evento*/
+/*Evento Mostrar Display : se llama la funcion MostrarDisplay  enviando target del Evento*/
  eventoMostrarDisplay: function(event){
-	 var val = OperAnt; 
-	 switch (val) {
-	   case "+":
-	   limpiar();
-	   OperAnt="";
-	   break;
-	   case "-":
-	   limpiar();
-	   OperAnt="";
-	   break;
-	   case "*":
-	   limpiar();
-	   OperAnt="";
-	   break;
-	   case "/":
-	   limpiar();
-	   OperAnt="";
-	   break;
-	   case "=":
-	   limpiar();
-	   OperAnt="";
-	   break;
-	 } 
 	   
     MostrarDisplay(event.target);
   },
-  // Evento Sumar :  Evalua si ya existe una operacion anterior de ser Asi llama la funcion resolver2, sino llama la funcion Sumar
+  // Evento Sumar :  se llama a la funcion AsiganrOpe con el valor +  para llenar el array Operaciones y Operando a ejecutar
  eventoSumar : function(event){	
-    if (Operacion != '+' ){
-		 if(Operacion!="") {
-	     OperAnt = Operacion;		 
-		 resolver2(); }
-	 } 
-	Sumar();	
+   AsginarOpe("+");
  },
-   // Evento Restar :  Evalua si ya existe una operacion anterior de ser Asi llama la funcion resolver2, sino llama la funcion Restar
+   // Evento Restar :   se llama a la funcion AsiganrOpe con el valor - para llenar el array Operaciones y Operando a ejecutar
   eventoRestar : function(event){
-     if (Operacion != ""){
-		 OperAnt = Operacion;
-		 resolver2(); }
-	 else {
-     if (Operacion =="") {
-	 Restar();
-	 }
-	 }
+
+    AsginarOpe("-");
  },
-   // Evento Multiplicar:  Evalua si ya existe una operacion anterior de ser Asi llama la funcion resolver2, sino llama la funcion Multiplicar
+   // Evento Multiplicar:  se llama a la funcion AsiganrOpe con el valor * para llenar el array Operaciones y Operando a ejecutar
  eventoMultiplicar : function(event){
-     if (Operacion != ""){
-		 OperAnt = Operacion;
-		 resolver2(); }
-	 else {
-     if (Operacion =="") {
-	 Multiplicar();
-	 }
-	 }
+      AsginarOpe("*");
  },
-   // Evento Division:  Evalua si ya existe una operacion anterior de ser Asi llama la funcion resolver2, sino llama la funcion Division
+   // Evento Division:   se llama a la funcion AsiganrOpe con el valor / para llenar el array Operaciones y Operando a ejecutar
   eventoDivision: function(event){
-     if (Operacion != ""){
-		 OperAnt = Operacion;
-		 resolver2(); }
-	 else {
-     if (Operacion =="") {
-	 Division();
-	 }
-	 }
+     AsginarOpe("/");
  },
- 
-   // Evento Igual :  toma el ultimo valor que muestra el display si existe algun valor llama la funcion resolver
+   // Evento Igual : Se verifica si en display se tiene el numero de la ultima operacion y se llama la funcion Resolver
  eventoIgual : function(event){
-	 
-     OperandoB = display.innerHTML;
+  OperandoB = display.innerHTML;
 	   if (OperandoB =="") {
 		alert("Ingrese Numero"); 
 	   }else {
@@ -377,7 +272,7 @@ init: function (){
  eventoResetear : function(event){	 
 	 resetear();
  },
- 
+ // Evento Resetear :  Evento inicializa las variables globales y limpia el valor del display
   eventoMasMenos : function(event){	 
      cad = display.innerHTML;
 	 validarMenosMas(cad);
@@ -391,6 +286,7 @@ init: function (){
     var botonesPagina = document.getElementsByClassName(selector);
     for (var i = 0; i < botonesPagina.length; i++) {
       botonesPagina[i].onclick = this.eventoMostrarDisplay;
+	 // botonesPagina[i].onclick = this.eventoCambiaTamaño; 
 	  if (botonesPagina[i].id  == 'mas') {
 		 botonesPagina[i].onclick = this.eventoSumar; 
 	  }
@@ -417,5 +313,5 @@ init: function (){
   
 
 }
-
+// Instancia del objeto calculadora.
 Calculadora.init();
